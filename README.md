@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Carpool Frontend
 
-## Getting Started
+Dette er Carpool Frontend
 
-First, run the development server:
+Carpool er et website, der giver et overblik over samkørselsture. Her kan brugere nemt oprette og administrere kørseler.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Det er et dynamisk website, hvor brugervenlighed er i centrum. Hjemmesiden er designet til at være responsive, hvilket betyder, at den automatisk tilpasser sig enhver skærmstørrelse, fra desktop til mobile enheder.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Funktioner
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Oprette Kørere:** Opret Kørere
+- **Oprette Kørsler:** Opret Kørsler
+- **Redigere Kørere:** Rediger dine Kørere
+- **Redigere Kørsler:** Rediger dine Kørsler
+- **Se Statistikker:** Se dine, andres og totale Statistikker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Teknologi
 
-## Learn More
+- **Frontend**: Next.js
+- **Backend**: C# .NET
+- **Database**: MsSQL
+- **Deployment**: Docker
 
-To learn more about Next.js, take a look at the following resources:
+## Projekt Opsætning
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Lokalt
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Klon Repositoriet**
 
-## Deploy on Vercel
+    ```
+    git clone https://github.com/emilstorgaard/carpool-frontend.git
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. change directory to the project folder
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```
+    cd carpool-frontend
+    ```
+
+3. **Installer Dependencies**
+
+    ```
+    npm install
+    ```
+
+4. **Køre Portfolio Tracker API**
+
+    <https://github.com/emilstorgaard/CarpoolAPI>
+
+5. **Starte Projektet Lokalt**
+
+    ```
+    npm run dev
+    ```
+
+### Docker
+
+For at bygge og køre projektet ved hjælp af Docker, følg disse trin:
+
+1. **Byg Docker Image**
+
+    ```
+    docker build -t carpool_frontend .
+    ```
+
+2. **Kør Containeren**
+
+    ```
+    docker run -p 8888:3000 carpool_frontend
+    ```
+
+    Herefter er applikationen tilgængelig på `localhost:8888`.
+
+© Emil Storgaard Andersen, 2024.
