@@ -16,7 +16,7 @@ export function Header() {
             <nav className="flex justify-between items-center py-4 px-6 bg-white text-gray-800 shadow-md">
                 <Link href="/" className="flex items-center space-x-3">
                     <Image src="/img/electric-car.png" width={500} height={500} alt="logo" className="h-8 w-auto" />
-                    <span className="text-lg font-semibold">Portfolio Tracker</span>
+                    <span className="text-lg font-semibold">Carpool</span>
                 </Link>
 
                 <div className="hidden lg:flex items-center space-x-6">

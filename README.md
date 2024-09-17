@@ -43,7 +43,7 @@ Det er et dynamisk website, hvor brugervenlighed er i centrum. Hjemmesiden er de
     npm install
     ```
 
-4. **Køre Portfolio Tracker API**
+4. **Køre Carppol API**
 
     <https://github.com/emilstorgaard/CarpoolAPI>
 
