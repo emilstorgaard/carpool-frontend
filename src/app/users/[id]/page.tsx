@@ -9,6 +9,8 @@ import { Spinner } from "@/components/Spinner";
 import { getDateTime } from "@/lib/dateTime";
 import { deleteUser } from "@/lib/users";
 import { useRouter } from 'next/navigation'
+import { getUserTrips } from "@/lib/trips";
+import Trips from "@/components/Trips";
 
 type User = {
     id: string;
@@ -20,12 +22,24 @@ type User = {
 type UserStats = {
     totalTrips: number;
     totalDistance: number;
-    totalTime: string
+    totalTime: string;
+}
+
+type UserTrip = {
+    id: string;
+    userId: string;
+    distance: number;
+    isCarpool: boolean;
+    startDate: string;
+    stopDate: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export default function User({ params }: { params: { id: string } }) {
     const [user, setUser] = useState<User>();
     const [userStats, setUserStats] = useState<UserStats>();
+    const [userTrips, setUserTrips] = useState<UserTrip[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter()
@@ -54,7 +68,35 @@ export default function User({ params }: { params: { id: string } }) {
             }
         }
         fetchUserStats();
+
+        async function fetchUserTrips() {
+            setLoading(true);
+            try {
+                const initialUserTrips = await getUserTrips(params.id);
+                setUserTrips(initialUserTrips);
+            } catch (err) {
+                setError("Failed to fetch user trips");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchUserTrips();
     }, [params.id]);
+
+    const reloadTrips = () => {
+        async function fetchTrips() {
+            setLoading(true);
+            try {
+                const initialTrips = await getUserTrips(params.id);
+                setUserTrips(initialTrips);
+            } catch (err) {
+                setError("Failed to fetch trips");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchTrips();
+    };
 
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -77,6 +119,7 @@ export default function User({ params }: { params: { id: string } }) {
     };
 
     return (
+        <>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 mb-4">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -167,5 +210,27 @@ export default function User({ params }: { params: { id: string } }) {
                 </div>
             </div>
         </div>
+
+        <div className="container mx-auto">
+                        
+            {loading && (
+                <div className="flex justify-center">
+                    <Spinner />
+                </div>
+            )}
+
+            {error && 
+                <div className="flex justify-center">
+                    <div className="text-red-500 mt-2">{error}</div>
+                </div>
+            }
+
+            {!loading && !error && (
+                <>
+                    <Trips trips={userTrips} onDelete={reloadTrips} />
+                </>
+            )}
+            </div>
+            </>
     )
 }

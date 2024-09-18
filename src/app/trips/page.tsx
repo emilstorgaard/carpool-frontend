@@ -10,8 +10,8 @@ type Trip = {
     userId: string;
     distance: number;
     isCarpool: boolean;
-    StartDate: string;
-    StopDate: string;
+    startDate: string;
+    stopDate: string;
     createdAt: string;
     updatedAt: string;
 };

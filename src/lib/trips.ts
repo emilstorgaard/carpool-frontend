@@ -18,6 +18,14 @@ export async function getTrip(id: string) {
     return data;
 }
 
+export async function getUserTrips(userId: string) {
+    const res = await fetch(`${apiUrl}/Trips/User/${userId}`, {
+        cache: "no-store",
+    });
+    const data = await res.json();
+    return data;
+}
+
 export async function deleteTrip(id: string) {
     await fetch(`${apiUrl}/Trips/${id}`, {
         method: 'DELETE',
