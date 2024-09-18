@@ -199,7 +199,7 @@ export default function User({ params }: { params: { id: string } }) {
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{userStats?.totalDistance}</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{userStats?.totalDistance} km</label>
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-bold text-gray-900">Total Time</label>

@@ -26,6 +26,26 @@ export async function getUserTrips(userId: string) {
     return data;
 }
 
+export async function postTrip(userId: string, distance: string, isCarpool: boolean, startDate: string, stopDate: string) {
+    const res = await fetch(`${apiUrl}/Trips`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            userId,
+            distance,
+            isCarpool,
+            startDate,
+            stopDate
+        }),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to add trip");
+    }
+}
+
 export async function deleteTrip(id: string) {
     await fetch(`${apiUrl}/Trips/${id}`, {
         method: 'DELETE',

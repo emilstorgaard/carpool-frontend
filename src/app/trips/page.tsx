@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { Spinner } from "@/components/Spinner";
 import { getTrips } from "@/lib/trips";
 import Trips from "@/components/Trips";
+import Image from 'next/image';
+import Link from 'next/link';
 
 type Trip = {
     id: string;
@@ -68,6 +70,12 @@ function Trip() {
 
             {!loading && !error && (
                 <>
+                    <div className="flex justify-center">
+                        <Link href="/trips/add" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                            <Image className="h-8 w-auto" src="/img/add.png" width={500} height={500} alt="" />
+                            Add
+                        </Link>
+                    </div>
                     <Trips trips={trips} onDelete={reloadTrips} />
                 </>
             )}

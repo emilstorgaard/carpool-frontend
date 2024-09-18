@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { Spinner } from "@/components/Spinner";
 import { getUsers } from "@/lib/users";
 import Users from "@/components/Users";
+import Image from 'next/image';
+import Link from 'next/link';
 
 type User = {
     id: string;
@@ -64,6 +66,12 @@ function User() {
 
             {!loading && !error && (
                 <>
+                    <div className="flex justify-center">
+                        <Link href="/users/add" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                            <Image className="h-8 w-auto" src="/img/add.png" width={500} height={500} alt="" />
+                            Add
+                        </Link>
+                    </div>
                     <Users users={users} onDelete={reloadUsers} />
                 </>
             )}

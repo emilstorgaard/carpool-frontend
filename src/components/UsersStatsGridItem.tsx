@@ -23,7 +23,7 @@ const Product: React.FC<ProductProps> = ({ userId, userName, totalTrips, totalDi
                         <label className="block mb-2 text-sm font-medium text-gray-900">{totalTrips}</label>
                     </div>
                     <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance</label>
+                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance km</label>
                         <label className="block mb-2 text-sm font-medium text-gray-900">{totalDistance}</label>
                     </div>
                     <div>
