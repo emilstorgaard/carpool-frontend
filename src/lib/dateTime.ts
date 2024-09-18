@@ -1,5 +1,5 @@
 export function getDateTime(dateString: string | undefined) {
-    var formattedDate = ""
+    let formattedDate = ""
 
     if (dateString) {
         const date = new Date(dateString);

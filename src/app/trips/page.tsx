@@ -2,49 +2,53 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { Spinner } from "@/components/Spinner";
-import { getDrivers } from "@/lib/drivers";
-import Drivers from "@/components/Drivers";
+import { getTrips } from "@/lib/trips";
+import Trips from "@/components/Trips";
 
-type Driver = {
+type Trip = {
     id: string;
-    name: string;
+    userId: string;
+    distance: number;
+    isCarpool: boolean;
+    StartDate: string;
+    StopDate: string;
     createdAt: string;
     updatedAt: string;
 };
 
-function Driver() {
-    const [drivers, setDrivers] = useState<Driver[]>([]);
+function Trip() {
+    const [trips, setTrips] = useState<Trip[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        async function fetchDrivers() {
+        async function fetchTrips() {
             setLoading(true);
             try {
-                const initialDrivers = await getDrivers();
-                setDrivers(initialDrivers);
+                const initialTrips = await getTrips();
+                setTrips(initialTrips);
             } catch (err) {
-                setError("Failed to fetch drivers");
+                setError("Failed to fetch trips");
             } finally {
                 setLoading(false);
             }
         }
-        fetchDrivers();
+        fetchTrips();
     }, []);
 
-    const reloadDrivers = () => {
-        async function fetchDrivers() {
+    const reloadTrips = () => {
+        async function fetchTrips() {
             setLoading(true);
             try {
-                const initialDrivers = await getDrivers();
-                setDrivers(initialDrivers);
+                const initialTrips = await getTrips();
+                setTrips(initialTrips);
             } catch (err) {
-                setError("Failed to fetch drivers");
+                setError("Failed to fetch trips");
             } finally {
                 setLoading(false);
             }
         }
-        fetchDrivers();
+        fetchTrips();
     };
 
     return (
@@ -64,17 +68,17 @@ function Driver() {
 
             {!loading && !error && (
                 <>
-                    <Drivers drivers={drivers} onDelete={reloadDrivers} />
+                    <Trips trips={trips} onDelete={reloadTrips} />
                 </>
             )}
         </div>
     );
 }
 
-export default function DriversPage() {
+export default function TripsPage() {
     return (
         <Suspense fallback={<Spinner />}>
-            <Driver />
+            <Trip />
         </Suspense>
     )
 }

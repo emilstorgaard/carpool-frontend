@@ -13,15 +13,25 @@ export function Header() {
 
     return (
         <header className="mb-10">
-            <nav className="flex justify-between items-center py-4 px-6 bg-white text-gray-800 shadow-md">
+            <nav className="flex justify-between items-center py-2 px-6 bg-white text-gray-800 shadow-md">
                 <Link href="/" className="flex items-center space-x-3">
                     <Image src="/img/electric-car.png" width={500} height={500} alt="logo" className="h-8 w-auto" />
                     <span className="text-lg font-semibold">Carpool</span>
                 </Link>
 
                 <div className="hidden lg:flex items-center space-x-6">
-                    <Link href="/drivers" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">Drivers</Link>
-                    <Link href="/drives" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">Drives</Link>
+                    <Link href="/users" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                        <Image className="h-8 w-auto" src="/img/driver.png" width={500} height={500} alt="" />
+                        Users
+                    </Link>
+                    <Link href="/trips" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                        <Image className="h-8 w-auto" src="/img/road.png" width={500} height={500} alt="" />
+                        Trips
+                    </Link>
+                    <Link href="/about" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                        <Image className="h-8 w-auto" src="/img/about.png" width={500} height={500} alt="" />
+                        About
+                    </Link>
                 </div>
 
                 <button
@@ -72,8 +82,9 @@ export function Header() {
                     </div>
                     <div className="mt-6">
                         <div className="space-y-4">
-                            <Link href="/drivers" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Drivers</Link>
-                            <Link href="/drives" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Drives</Link>
+                            <Link href="/users" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Users</Link>
+                            <Link href="/trips" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Trips</Link>
+                            <Link href="/about" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">About</Link>
                         </div>
                     </div>
                 </div>

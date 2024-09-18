@@ -1,8 +1,8 @@
 "use client"
 
-import DriverListItem from "@/components/DriverListItem";
+import UserListItem from "@/components/UserListItem";
 
-type Driver = {
+type User = {
     id: string;
     name: string;
     createdAt: string;
@@ -10,20 +10,20 @@ type Driver = {
 };
 
 interface PageProps {
-    drivers: Driver[];
+    users: User[];
     onDelete: () => void;
 }
 
-const Drivers: React.FC<PageProps> = ({ drivers, onDelete }) => {
+const Users: React.FC<PageProps> = ({ users, onDelete }) => {
     return (
         <div className="container mx-auto px-4 pb-8">
 
             <ul className="mx-auto divide-y divide-gray-200">
-                {drivers.map((driver: Driver) => (
-                    <DriverListItem
-                        key={driver.id}
-                        id={driver.id}
-                        name={driver.name}
+                {users.map((user: User) => (
+                    <UserListItem
+                        key={user.id}
+                        id={user.id}
+                        name={user.name}
                         onDelete={onDelete}
                     />
                 ))}
@@ -33,4 +33,4 @@ const Drivers: React.FC<PageProps> = ({ drivers, onDelete }) => {
     );
 }
 
-export default Drivers;
+export default Users;

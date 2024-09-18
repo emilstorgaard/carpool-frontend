@@ -3,37 +3,41 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { getDriver } from "@/lib/drivers";
+import { getTrip } from "@/lib/trips";
 import { Spinner } from "@/components/Spinner";
 import { getDateTime } from "@/lib/dateTime";
-import { deleteDriver } from "@/lib/drivers";
+import { deleteTrip } from "@/lib/trips";
 import { useRouter } from 'next/navigation'
 
-type Driver = {
+type Trip = {
     id: string;
-    name: string;
+    userId: string;
+    distance: number;
+    isCarpool: boolean;
+    startDate: string;
+    stopDate: string;
     createdAt: string;
     updatedAt: string;
 };
 
-export default function Driver({ params }: { params: { id: string } }) {
-    const [driver, setDriver] = useState<Driver>();
+export default function Trip({ params }: { params: { id: string } }) {
+    const [trip, setTrip] = useState<Trip>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter()
 
     useEffect(() => {
-        async function fetchDriver() {
+        async function fetchTrip() {
             try {
-                const initialDriver = await getDriver(params.id);
-                setDriver(initialDriver);
+                const initialTrip = await getTrip(params.id);
+                setTrip(initialTrip);
             } catch (err) {
-                setError("Failed to fetch driver");
+                setError("Failed to fetch trip");
             } finally {
                 setLoading(false);
             }
         }
-        fetchDriver();
+        fetchTrip();
     }, [params.id]);
 
     const [isDeleting, setIsDeleting] = useState(false);
@@ -41,24 +45,24 @@ export default function Driver({ params }: { params: { id: string } }) {
     const handleDelete = async () => {
         setIsDeleting(true)
         try {
-            await deleteDriver(params.id)
-            router.push('/drivers')
+            await deleteTrip(params.id)
+            router.push('/trips')
         } catch (error) {
-            console.error('Error deleting driver:', error);
+            console.error('Error deleting trip:', error);
         } finally {
             setIsDeleting(false);
         }
     };
 
     const confirmDelete = () => {
-        if (window.confirm('Are you sure you want to delete this driver?')) {
+        if (window.confirm('Are you sure you want to delete this trip?')) {
             handleDelete();
         }
     };
 
     return (
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-            <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+            <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 mb-4">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 
                     {loading && (
@@ -72,35 +76,51 @@ export default function Driver({ params }: { params: { id: string } }) {
                     {!loading && !error && (
                         <>
                             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                                Driver
+                                Trip
                             </h1>
 
-                            <label>{driver?.id}</label>
+                            <label>{trip?.id}</label>
                             
                             <div className='flex justify-center items-center'>
                                 <div className="relative w-48 h-48">
                                     <Image
                                         className="object-cover rounded-t-lg"
-                                        src="/img/driver.png"
+                                        src="/img/road.png"
                                         layout="fill"
-                                        alt={driver?.name || "driver"}
+                                        alt={trip?.id || "trip"}
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Name</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{driver?.name}</label>
+                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">User</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.userId}</label>
+                            </div>
+                            <div>
+                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Distance</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.distance} km</label>
+                            </div>
+                            <div>
+                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Carpool</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.isCarpool ? 'Yes' : 'No'}</label>
+                            </div>
+                            <div>
+                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Start</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.startDate)}</label>
+                            </div>
+                            <div>
+                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Stop</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.stopDate)}</label>
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-bold text-gray-900">Created At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(driver?.createdAt)}</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.createdAt)}</label>
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-bold text-gray-900">Updated At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(driver?.updatedAt)}</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.updatedAt)}</label>
                             </div>
                             <div className="flex justify-between items-center">
-                                <Link href={`/drivers/${params.id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
+                                <Link href={`/trips/${params.id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
                                     Edit
                                 </Link>
                                 {isDeleting ? (

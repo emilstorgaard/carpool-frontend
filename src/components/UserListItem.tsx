@@ -1,31 +1,31 @@
 import { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { deleteDriver } from "@/lib/drivers";
+import { deleteUser } from "@/lib/users";
 
-interface DriverProps {
+interface UserProps {
     id: string;
     name: string;
     onDelete: () => void;
 }
 
-const Driver: React.FC<DriverProps> = ({ id, name, onDelete }) => {
+const User: React.FC<UserProps> = ({ id, name, onDelete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
         setIsDeleting(true)
         try {
-            await deleteDriver(id)
+            await deleteUser(id)
             onDelete();
         } catch (error) {
-            console.error('Error deleting driver:', error);
+            console.error('Error deleting user:', error);
         } finally {
             setIsDeleting(false);
         }
     };
 
     const confirmDelete = () => {
-        if (window.confirm('Are you sure you want to delete this driver?')) {
+        if (window.confirm('Are you sure you want to delete this user?')) {
             handleDelete();
         }
     };
@@ -34,7 +34,7 @@ const Driver: React.FC<DriverProps> = ({ id, name, onDelete }) => {
         <li className="p-4 rounded hover:bg-gray-100 hover:cursor-pointer transition-shadow duration-300 ease-in-out">
             
                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                    <Link href={`/drivers/${id}`} className="flex-shrink-0">
+                    <Link href={`/users/${id}`} className="flex-shrink-0">
                         <div >
                             <Image
                                 className="w-16 h-16 rounded"
@@ -46,7 +46,7 @@ const Driver: React.FC<DriverProps> = ({ id, name, onDelete }) => {
                         </div>
                     </Link>
 
-                    <Link href={`/drivers/${id}`} className="flex-1 min-w-0">
+                    <Link href={`/users/${id}`} className="flex-1 min-w-0">
                         <div >
                             <p className="text-lg font-medium text-gray-900 truncate">
                                 {name}
@@ -54,7 +54,7 @@ const Driver: React.FC<DriverProps> = ({ id, name, onDelete }) => {
                         </div>
                     </Link>
                     <div className="inline-flex items-center space-x-6">
-                        <Link href={`/drivers/${id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
+                        <Link href={`/users/${id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
                             Edit
                         </Link>
                         {isDeleting ? (
@@ -70,4 +70,4 @@ const Driver: React.FC<DriverProps> = ({ id, name, onDelete }) => {
     );
 };
 
-export default Driver;
+export default User;
