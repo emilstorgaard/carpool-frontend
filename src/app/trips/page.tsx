@@ -71,6 +71,10 @@ function Trip() {
             {!loading && !error && (
                 <>
                     <div className="flex justify-center">
+                        <Link href="/trips/start" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
+                            <Image className="h-8 w-auto" src="/img/add.png" width={500} height={500} alt="" />
+                            Start
+                        </Link>
                         <Link href="/trips/add" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
                             <Image className="h-8 w-auto" src="/img/add.png" width={500} height={500} alt="" />
                             Add
