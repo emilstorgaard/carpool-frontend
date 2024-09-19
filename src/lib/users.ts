@@ -34,6 +34,22 @@ export async function postUser(name: string) {
     }
 }
 
+export async function putUser(userId: string, name: string) {
+    const res = await fetch(`${apiUrl}/Users/${userId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name
+        }),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to edit user");
+    }
+}
+
 export async function deleteUser(id: string) {
     await fetch(`${apiUrl}/Users/${id}`, {
         method: 'DELETE',

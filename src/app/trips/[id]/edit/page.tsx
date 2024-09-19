@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { postTrip } from "@/lib/trips";
+import { putTrip } from "@/lib/trips";
 import { useRouter } from 'next/navigation'
 import Image from 'next/image';
 import { getUsers } from "@/lib/users";
+import { getTrip } from "@/lib/trips";
+import { Spinner } from "@/components/Spinner";
 
 type User = {
     id: string;
@@ -13,7 +15,18 @@ type User = {
     updatedAt: string;
 };
 
-export default function AddTrip() {
+type Trip = {
+    id: string;
+    userId: string;
+    distance: number;
+    isCarpool: boolean;
+    startDate: string;
+    stopDate: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export default function EditTrip({ params }: { params: { id: string } }) {
 	const [userId, setUserId] = useState("");
 	const [distance, setDistance] = useState("");
     const [isCarpool, setIsCarpool] = useState(false);
@@ -24,6 +37,26 @@ export default function AddTrip() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
+
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchTrip() {
+            try {
+                const initialTrip = await getTrip(params.id);
+                setUserId(initialTrip.userId)
+                setDistance(initialTrip.distance)
+                setIsCarpool(initialTrip.isCarpool)
+                setStartDate(initialTrip.startDate)
+                setStopDate(initialTrip.stopDate)
+            } catch (err) {
+                setError("Failed to fetch trip");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchTrip();
+    }, [params.id]);
 
     useEffect(() => {
         async function fetchUsers() {
@@ -37,15 +70,15 @@ export default function AddTrip() {
         fetchUsers();
     }, []);
 
-	const addTrip = async (e: React.FormEvent) => {
+	const editTrip = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 	
 		try {
-			postTrip(userId, distance, isCarpool, startDate, stopDate)
-            router.push('/trips')
+			putTrip(params.id, userId, distance, isCarpool, startDate, stopDate)
+            router.push(`/trips/${params.id}`)
 		} catch (err) {
-		  setError("Failed to add trip");
+		  setError("Failed to edit trip");
 		}
 	  };
 
@@ -55,13 +88,23 @@ export default function AddTrip() {
 	        <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
 		        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 
+                    {loading && (
+                        <div className="flex justify-center">
+                            <Spinner />
+                        </div>
+                    )}
+
+
                     {error && <div className="text-red-500 mt-2">{error}</div>}
             
+                    {!loading && !error && (
+                    <>
+
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                        Add Trip
+                        Edit Trip
                     </h1>
 
-                    <form className="space-y-4 md:space-y-6" onSubmit={addTrip}>
+                    <form className="space-y-4 md:space-y-6" onSubmit={editTrip}>
                     <button
                             onClick={() => setIsOpen(!isOpen)}
                             id="dropdownUsersButton"
@@ -145,8 +188,11 @@ export default function AddTrip() {
                                 required
                             />
                         </div>
-                        <button type="submit" className="w-full px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out bg-green-500 text-white hover:bg-green-600">Add Trip</button>
+                        <button type="submit" className="w-full px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out bg-blue-500 text-white hover:bg-blue-600">Edit Trip</button>
                     </form>
+
+                    </>
+                    )}
                     
 		        </div>
 	        </div>
