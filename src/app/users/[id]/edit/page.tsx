@@ -6,13 +6,6 @@ import { useRouter } from 'next/navigation'
 import { getUser } from "@/lib/users";
 import { Spinner } from "@/components/Spinner";
 
-type User = {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
 export default function EditUser({ params }: { params: { id: string } }) {
 	const [name, setName] = useState("");
 	const [error, setError] = useState<string | null>(null);

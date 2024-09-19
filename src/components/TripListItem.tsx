@@ -14,7 +14,7 @@ interface TripProps {
     onDelete: () => void;
 }
 
-const Trip: React.FC<TripProps> = ({ id, userId, distance, isCarpool, startDate, stopDate, onDelete }) => {
+const Trip: React.FC<TripProps> = ({ id, userId, distance, isCarpool, startDate, onDelete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     console.log(isCarpool)

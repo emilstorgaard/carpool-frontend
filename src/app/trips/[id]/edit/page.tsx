@@ -15,17 +15,6 @@ type User = {
     updatedAt: string;
 };
 
-type Trip = {
-    id: string;
-    userId: string;
-    distance: number;
-    isCarpool: boolean;
-    startDate: string;
-    stopDate: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
 export default function EditTrip({ params }: { params: { id: string } }) {
 	const [userId, setUserId] = useState("");
 	const [distance, setDistance] = useState("");
@@ -93,7 +82,6 @@ export default function EditTrip({ params }: { params: { id: string } }) {
                             <Spinner />
                         </div>
                     )}
-
 
                     {error && <div className="text-red-500 mt-2">{error}</div>}
             
