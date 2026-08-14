@@ -17,8 +17,6 @@ interface TripProps {
 const Trip: React.FC<TripProps> = ({ id, userId, distance, isCarpool, startDate, onDelete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
-    console.log(isCarpool)
-
     const handleDelete = async () => {
         setIsDeleting(true)
         try {
@@ -38,53 +36,46 @@ const Trip: React.FC<TripProps> = ({ id, userId, distance, isCarpool, startDate,
     };
 
     return (
-        <li className="p-4 rounded hover:bg-gray-100 hover:cursor-pointer transition-shadow duration-300 ease-in-out">
-            
-                <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                    <Link href={`/trips/${id}`} className="flex-shrink-0">
-                        <div >
-                            <Image
-                                className="w-16 h-16 rounded"
-                                src="/img/road.png"
-                                width={500}
-                                height={500}
-                                alt={`${id}`}
-                            />
-                        </div>
+        <li className="card card-hover">
+            <div className="flex items-center gap-4 p-4">
+                <Link href={`/trips/${id}`} className="shrink-0">
+                    <Image
+                        className="w-14 h-14 rounded-full object-cover bg-slate-100"
+                        src="/img/road.png"
+                        width={56}
+                        height={56}
+                        alt=""
+                    />
+                </Link>
+
+                <Link href={`/trips/${id}`} className="flex-1 min-w-0">
+                    <p className="text-base font-semibold text-slate-900 truncate">
+                        {getDateTime(startDate)}
+                    </p>
+                    <p className="text-sm text-slate-500 truncate">
+                        {userId}
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-2">
+                        <span className={isCarpool ? 'badge-success' : 'badge-neutral'}>
+                            {isCarpool ? 'Carpool' : 'Solo'}
+                        </span>
+                        <span className="text-sm text-slate-500">{distance} km</span>
+                    </div>
+                </Link>
+
+                <div className="flex items-center gap-4 shrink-0">
+                    <Link href={`/trips/${id}/edit`} className="link-action">
+                        Edit
                     </Link>
-
-                    <div className="flex-1 min-w-0">
-                        <Link href={`/trips/${id}`}>
-                            <div>
-                                <p className="text-lg font-medium text-gray-900 truncate">
-                                    {getDateTime(startDate)}
-                                </p>
-                                <p className="text-sm text-gray-600 truncate">
-                                    {userId}
-                                </p>
-                                <p className="text-sm text-gray-500 truncate">
-                                    Carpool: {isCarpool ? 'Yes' : 'No'}
-                                </p>
-                                <p className="text-sm text-gray-500 truncate">
-                                    {distance} km
-                                </p>
-                            </div>
-                        </Link>
-                    </div>
-
-                    <div className="inline-flex items-center space-x-6">
-                        <Link href={`/trips/${id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
-                            Edit
-                        </Link>
-                        {isDeleting ? (
-                            <p className="text-red-500 font-bold">Deleting...</p>
-                        ) : (
-                            <button onClick={confirmDelete} className="text-red-500 hover:text-red-700 font-bold rounded-md transition duration-300 ease-in-out">
-                                Delete
-                            </button>
-                        )}
-                    </div>
+                    {isDeleting ? (
+                        <span className="text-sm font-semibold text-red-400">Deleting...</span>
+                    ) : (
+                        <button onClick={confirmDelete} className="link-danger">
+                            Delete
+                        </button>
+                    )}
                 </div>
+            </div>
         </li>
     );
 };

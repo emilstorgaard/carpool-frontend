@@ -1,36 +1,34 @@
 "use client"
 
 import UserStatsGridItem from "@/components/UsersStatsGridItem";
-
-type UsersStat = {
-    userId: string;
-    userName: string;
-    totalTrips: number;
-    totalDistance: number;
-    totalTime: string;
-  };
+import type { UserTripStats } from "@/types";
 
 interface PageProps {
-    usersStats: UsersStat[];
+    usersStats: UserTripStats[];
 }
 
 const Users: React.FC<PageProps> = ({ usersStats }) => {
+    if (usersStats.length === 0) {
+        return (
+            <div className="empty-state">
+                <p className="font-medium text-slate-700">No stats yet</p>
+                <p className="text-sm">Stats will appear once trips have been logged.</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="container mx-auto px-4 pb-8">
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {usersStats.map((usersStat: UsersStat) => (
-                        <UserStatsGridItem
-                            key={usersStat.userName}
-                            userId={usersStat.userId}
-                            userName={usersStat.userName}
-                            totalTrips={usersStat.totalTrips}
-                            totalDistance={usersStat.totalDistance}
-                            totalTime={usersStat.totalTime}
-                        />
-                    ))}
-                </div>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {usersStats.map((usersStat: UserTripStats) => (
+                    <UserStatsGridItem
+                        key={usersStat.userName}
+                        userId={usersStat.userId}
+                        userName={usersStat.userName}
+                        totalTrips={usersStat.totalTrips}
+                        totalDistance={usersStat.totalDistance}
+                        totalTime={usersStat.totalTime}
+                    />
+                ))}
         </div>
     );
 }

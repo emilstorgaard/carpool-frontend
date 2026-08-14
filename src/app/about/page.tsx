@@ -1,17 +1,16 @@
 export default function AboutPage() {
     return (
-      <div className="max-w-lg mx-auto">
-      <div className="mx-4 p-6 bg-white border border-gray-200 rounded-lg shadow">
-  
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Carpool</h5>
-  
-        <p className="mb-3 font-normal text-gray-700">Welcome to Carpool</p>
-        <p>
-          Carpool is a website that provides an overview of carpooling trips. Here, users can easily create and manage trips.
-        </p>
-    
+      <div className="page-container-narrow py-8">
+        <div className="panel">
+
+          <h1 className="text-xl font-bold text-slate-900 mb-2">Carpool</h1>
+
+          <p className="text-sm font-medium text-slate-700 mb-3">Welcome to Carpool</p>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Carpool is a website that provides an overview of carpooling trips. Here, users can easily create and manage trips.
+          </p>
+
+        </div>
       </div>
-    </div>
     );
   }
-  

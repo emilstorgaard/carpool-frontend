@@ -1,79 +1,37 @@
 "use client"
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Spinner } from "@/components/Spinner";
 import { getUsers } from "@/lib/users";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import Users from "@/components/Users";
 import Image from 'next/image';
 import Link from 'next/link';
 
-type User = {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
-function User() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        async function fetchUsers() {
-            setLoading(true);
-            try {
-                const initialUsers = await getUsers();
-                setUsers(initialUsers);
-            } catch (err) {
-                setError("Failed to fetch users");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchUsers();
-    }, []);
-
-    const reloadUsers = () => {
-        async function fetchUsers() {
-            setLoading(true);
-            try {
-                const initialUsers = await getUsers();
-                setUsers(initialUsers);
-            } catch (err) {
-                setError("Failed to fetch users");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchUsers();
-    };
+function UsersList() {
+    const { data: users, loading, error, reload } = useAsyncData(getUsers, [], "Failed to fetch users");
 
     return (
-        <div className="container mx-auto">
-            
-            {loading && (
-                <div className="flex justify-center">
-                    <Spinner />
+        <div className="page-container">
+            <div className="page-header flex-row items-center justify-between">
+                <div>
+                    <h1 className="page-title">Users</h1>
+                    <p className="page-subtitle">Manage the people who take part in carpools.</p>
                 </div>
-            )}
+                {!loading && !error && (
+                    <Link href="/users/add" className="btn-primary">
+                        <Image className="h-4 w-4 invert" src="/img/add.png" width={16} height={16} alt="" />
+                        Add User
+                    </Link>
+                )}
+            </div>
 
-            {error && 
-                <div className="flex justify-center">
-                    <div className="text-red-500 mt-2">{error}</div>
-                </div>
-            }
+            {loading && <Spinner label="Loading users..." />}
+
+            {error && <div className="alert-error">{error}</div>}
 
             {!loading && !error && (
-                <>
-                    <div className="flex justify-center">
-                        <Link href="/users/add" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
-                            <Image className="h-8 w-auto" src="/img/add.png" width={500} height={500} alt="" />
-                            Add
-                        </Link>
-                    </div>
-                    <Users users={users} onDelete={reloadUsers} />
-                </>
+                <Users users={users ?? []} onDelete={reload} />
             )}
         </div>
     );
@@ -82,7 +40,7 @@ function User() {
 export default function UsersPage() {
     return (
         <Suspense fallback={<Spinner />}>
-            <User />
+            <UsersList />
         </Suspense>
     )
 }

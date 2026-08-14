@@ -1,17 +1,7 @@
 "use client"
 
 import TripListItem from "@/components/TripListItem";
-
-type Trip = {
-    id: string;
-    userId: string;
-    distance: number;
-    isCarpool: boolean;
-    startDate: string;
-    stopDate: string;
-    createdAt: string;
-    updatedAt: string;
-};
+import type { Trip } from "@/types";
 
 interface PageProps {
     trips: Trip[];
@@ -19,25 +9,30 @@ interface PageProps {
 }
 
 const Trips: React.FC<PageProps> = ({ trips, onDelete }) => {
+    if (trips.length === 0) {
+        return (
+            <div className="empty-state">
+                <p className="font-medium text-slate-700">No trips yet</p>
+                <p className="text-sm">Start or add a trip to see it here.</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="container mx-auto px-4 pb-8">
-
-            <ul className="mx-auto divide-y divide-gray-200">
-                {trips.map((trip: Trip) => (
-                    <TripListItem
-                        key={trip.id}
-                        id={trip.id}
-                        userId={trip.userId}
-                        distance={trip.distance}
-                        isCarpool={trip.isCarpool}
-                        startDate={trip.startDate}
-                        stopDate={trip.stopDate}
-                        onDelete={onDelete}
-                    />
-                ))}
-            </ul>
-
-        </div>
+        <ul className="space-y-3">
+            {trips.map((trip: Trip) => (
+                <TripListItem
+                    key={trip.id}
+                    id={trip.id}
+                    userId={trip.userId}
+                    distance={trip.distance}
+                    isCarpool={trip.isCarpool}
+                    startDate={trip.startDate}
+                    stopDate={trip.stopDate}
+                    onDelete={onDelete}
+                />
+            ))}
+        </ul>
     );
 }
 

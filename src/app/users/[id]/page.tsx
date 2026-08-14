@@ -1,102 +1,31 @@
 "use client"
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { getUser } from "@/lib/users";
+import { getUser, deleteUser } from "@/lib/users";
 import { getUserStats } from "@/lib/stats";
 import { Spinner } from "@/components/Spinner";
 import { getDateTime } from "@/lib/dateTime";
-import { deleteUser } from "@/lib/users";
 import { useRouter } from 'next/navigation'
 import { getUserTrips } from "@/lib/trips";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import Trips from "@/components/Trips";
 
-type User = {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
-type UserStats = {
-    totalTrips: number;
-    totalDistance: number;
-    totalTime: string;
-}
-
-type UserTrip = {
-    id: string;
-    userId: string;
-    distance: number;
-    isCarpool: boolean;
-    startDate: string;
-    stopDate: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
 export default function User({ params }: { params: { id: string } }) {
-    const [user, setUser] = useState<User>();
-    const [userStats, setUserStats] = useState<UserStats>();
-    const [userTrips, setUserTrips] = useState<UserTrip[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: user, loading: loadingUser, error: userError } = useAsyncData(
+        () => getUser(params.id), [params.id], "Failed to fetch user"
+    );
+    const { data: userStats, loading: loadingStats, error: statsError } = useAsyncData(
+        () => getUserStats(params.id), [params.id], "Failed to fetch user stats"
+    );
+    const { data: userTrips, loading: loadingTrips, error: tripsError, reload: reloadTrips } = useAsyncData(
+        () => getUserTrips(params.id), [params.id], "Failed to fetch user trips"
+    );
+
+    const loading = loadingUser || loadingStats;
+    const error = userError || statsError;
     const router = useRouter()
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const initialUser = await getUser(params.id);
-                setUser(initialUser);
-            } catch (err) {
-                setError("Failed to fetch user");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchUser();
-
-        async function fetchUserStats() {
-            try {
-                const userStats = await getUserStats(params.id);
-                setUserStats(userStats);
-            } catch (err) {
-                setError("Failed to fetch user stats");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchUserStats();
-
-        async function fetchUserTrips() {
-            setLoading(true);
-            try {
-                const initialUserTrips = await getUserTrips(params.id);
-                setUserTrips(initialUserTrips);
-            } catch (err) {
-                setError("Failed to fetch user trips");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchUserTrips();
-    }, [params.id]);
-
-    const reloadTrips = () => {
-        async function fetchTrips() {
-            setLoading(true);
-            try {
-                const initialTrips = await getUserTrips(params.id);
-                setUserTrips(initialTrips);
-            } catch (err) {
-                setError("Failed to fetch trips");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchTrips();
-    };
 
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -119,118 +48,85 @@ export default function User({ params }: { params: { id: string } }) {
     };
 
     return (
-        <>
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-            <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 mb-4">
-                <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div className="page-container-narrow py-8">
+            <div className="panel mb-6">
 
-                    {loading && (
-                        <div className="flex justify-center">
-                            <Spinner />
-                        </div>
-                    )}
+                    {loading && <Spinner label="Loading user..." />}
 
-                    {error && <div className="text-red-500 mt-2">{error}</div>}
+                    {error && <div className="alert-error">{error}</div>}
 
                     {!loading && !error && (
                         <>
-                            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                                User
-                            </h1>
-
-                            <label>{user?.id}</label>
-                            
-                            <div className='flex justify-center items-center'>
-                                <div className="relative w-48 h-48">
-                                    <Image
-                                        className="object-cover rounded-t-lg"
-                                        src="/img/driver.png"
-                                        layout="fill"
-                                        alt={user?.name || "user"}
-                                    />
+                            <div className="flex items-center gap-4 mb-6">
+                                <Image
+                                    className="rounded-full object-cover bg-slate-100"
+                                    src="/img/driver.png"
+                                    width={64}
+                                    height={64}
+                                    alt={user?.name || "user"}
+                                />
+                                <div>
+                                    <h1 className="text-xl font-bold text-slate-900">
+                                        {user?.name}
+                                    </h1>
+                                    <p className="text-sm text-slate-500">{user?.id}</p>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Name</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{user?.name}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Created At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(user?.createdAt)}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Updated At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(user?.updatedAt)}</label>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <Link href={`/users/${params.id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
+
+                            <dl className="space-y-3 mb-6">
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Created At</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(user?.createdAt)}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Updated At</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(user?.updatedAt)}</dd>
+                                </div>
+                            </dl>
+
+                            <div className="flex justify-between items-center border-t border-slate-100 pt-4">
+                                <Link href={`/users/${params.id}/edit`} className="link-action">
                                     Edit
                                 </Link>
                                 {isDeleting ? (
-                                    <p className="text-red-500 font-bold">Deleting...</p>
+                                    <span className="text-sm font-semibold text-red-400">Deleting...</span>
                                 ) : (
-                                    <button onClick={confirmDelete} className="text-red-500 hover:text-red-700 font-bold rounded-md transition duration-300 ease-in-out">
+                                    <button onClick={confirmDelete} className="link-danger">
                                         Delete
                                     </button>
                                 )}
                             </div>
                         </>
                     )}
-
-                </div>
             </div>
-
-            
-            <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-                <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                {loading && (
-                        <div className="flex justify-center">
-                            <Spinner />
-                        </div>
-                    )}
-
-                    {error && <div className="text-red-500 mt-2">{error}</div>}
-
-                    {!loading && !error && (
-                        <>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Total Trips</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{userStats?.totalTrips}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{userStats?.totalDistance} km</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Total Time</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{userStats?.totalTime}</label>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-        </div>
-
-        <div className="container mx-auto">
-                        
-            {loading && (
-                <div className="flex justify-center">
-                    <Spinner />
-                </div>
-            )}
-
-            {error && 
-                <div className="flex justify-center">
-                    <div className="text-red-500 mt-2">{error}</div>
-                </div>
-            }
 
             {!loading && !error && (
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div className="panel">
+                        <p className="stat-label">Trips</p>
+                        <p className="stat-value">{userStats?.totalTrips}</p>
+                    </div>
+                    <div className="panel">
+                        <p className="stat-label">Distance</p>
+                        <p className="stat-value">{userStats?.totalDistance} km</p>
+                    </div>
+                    <div className="panel">
+                        <p className="stat-label">Time</p>
+                        <p className="stat-value">{userStats?.totalTime}</p>
+                    </div>
+                </div>
+            )}
+
+            {loadingTrips && <Spinner label="Loading trips..." />}
+
+            {tripsError && <div className="alert-error">{tripsError}</div>}
+
+            {!loadingTrips && !tripsError && (
                 <>
-                    <Trips trips={userTrips} onDelete={reloadTrips} />
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Trips</h2>
+                    <Trips trips={userTrips ?? []} onDelete={reloadTrips} />
                 </>
             )}
-            </div>
-            </>
+        </div>
     )
 }

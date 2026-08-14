@@ -31,41 +31,37 @@ const User: React.FC<UserProps> = ({ id, name, onDelete }) => {
     };
 
     return (
-        <li className="p-4 rounded hover:bg-gray-100 hover:cursor-pointer transition-shadow duration-300 ease-in-out">
-            
-                <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                    <Link href={`/users/${id}`} className="flex-shrink-0">
-                        <div >
-                            <Image
-                                className="w-16 h-16 rounded"
-                                src="/img/driver.png"
-                                width={500}
-                                height={500}
-                                alt={`${name}`}
-                            />
-                        </div>
-                    </Link>
+        <li className="card card-hover">
+            <div className="flex items-center gap-4 p-4">
+                <Link href={`/users/${id}`} className="shrink-0">
+                    <Image
+                        className="w-14 h-14 rounded-full object-cover bg-slate-100"
+                        src="/img/driver.png"
+                        width={56}
+                        height={56}
+                        alt={name}
+                    />
+                </Link>
 
-                    <Link href={`/users/${id}`} className="flex-1 min-w-0">
-                        <div >
-                            <p className="text-lg font-medium text-gray-900 truncate">
-                                {name}
-                            </p>
-                        </div>
+                <Link href={`/users/${id}`} className="flex-1 min-w-0">
+                    <p className="text-base font-semibold text-slate-900 truncate">
+                        {name}
+                    </p>
+                </Link>
+
+                <div className="flex items-center gap-4 shrink-0">
+                    <Link href={`/users/${id}/edit`} className="link-action">
+                        Edit
                     </Link>
-                    <div className="inline-flex items-center space-x-6">
-                        <Link href={`/users/${id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
-                            Edit
-                        </Link>
-                        {isDeleting ? (
-                            <p className="text-red-500 font-bold">Deleting...</p>
-                        ) : (
-                            <button onClick={confirmDelete} className="text-red-500 hover:text-red-700 font-bold rounded-md transition duration-300 ease-in-out">
-                                Delete
-                            </button>
-                        )}
-                    </div>
+                    {isDeleting ? (
+                        <span className="text-sm font-semibold text-red-400">Deleting...</span>
+                    ) : (
+                        <button onClick={confirmDelete} className="link-danger">
+                            Delete
+                        </button>
+                    )}
                 </div>
+            </div>
         </li>
     );
 };

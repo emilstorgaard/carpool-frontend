@@ -1,121 +1,55 @@
 "use client"
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Spinner } from "@/components/Spinner";
-import { getTotalStats } from "@/lib/stats";
-import { getUsersStats } from '@/lib/stats';
+import { getTotalStats, getUsersStats } from "@/lib/stats";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import UsersStats from "@/components/UsersStats";
 
-type TotalStats = {
-  totalTrips: number;
-  totalDistance: number;
-  totalUsers: boolean;
-  totalTime: string;
-};
-
-type UsersStat = {
-    userId: string;
-    userName: string;
-    totalTrips: number;
-    totalDistance: number;
-    totalTime: string;
-  };
-
 function TotalStatsFunc() {
-  const [totalStats, setTotalStats] = useState<TotalStats>();
-  const [usersStats, setUsersStats] = useState<UsersStat[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: totalStats, loading: loadingStats, error: statsError } = useAsyncData(getTotalStats, [], "Failed to fetch total stats");
+  const { data: usersStats, loading: loadingUsersStats, error: usersStatsError } = useAsyncData(getUsersStats, [], "Failed to fetch users stats");
 
-  useEffect(() => {
-    async function fetchTotalStats() {
-        setLoading(true);
-        try {
-            const initialTotalStats = await getTotalStats();
-            setTotalStats(initialTotalStats);
-        } catch (err) {
-            setError("Failed to fetch total stats");
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchTotalStats();
-
-    async function fetchUsersStats() {
-        setLoading(true);
-        try {
-            const initialUsersStats = await getUsersStats();
-            setUsersStats(initialUsersStats);
-        } catch (err) {
-            setError("Failed to fetch users stats");
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchUsersStats();
-}, []);
+  const loading = loadingStats || loadingUsersStats;
+  const error = statsError || usersStatsError;
 
   return (
-    <>
-    <div className="max-w-lg mx-auto mb-4">
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Dashboard</h1>
+        <p className="page-subtitle">An overview of all carpool activity.</p>
+      </div>
 
-    <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-        {loading && (
-                <div className="flex justify-center">
-                    <Spinner />
-                </div>
-            )}
+      {loading && <Spinner label="Loading stats..." />}
 
-            {error && <div className="text-red-500 mt-2">{error}</div>}
+      {error && <div className="alert-error mb-6">{error}</div>}
 
-            {!loading && !error && (
-                <>
-                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Total Stats</h5>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Users</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalStats?.totalUsers}</label>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900 fon">Total Trips</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalStats?.totalTrips}</label>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalStats?.totalDistance} km</label>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Time</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalStats?.totalTime}</label>
-                    </div>
-                </>
-            )}
-        </div>
+      {!loading && !error && (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            <div className="panel">
+              <p className="stat-label">Total Users</p>
+              <p className="stat-value text-2xl">{totalStats?.totalUsers}</p>
+            </div>
+            <div className="panel">
+              <p className="stat-label">Total Trips</p>
+              <p className="stat-value text-2xl">{totalStats?.totalTrips}</p>
+            </div>
+            <div className="panel">
+              <p className="stat-label">Total Distance</p>
+              <p className="stat-value text-2xl">{totalStats?.totalDistance} km</p>
+            </div>
+            <div className="panel">
+              <p className="stat-label">Total Time</p>
+              <p className="stat-value text-2xl">{totalStats?.totalTime}</p>
+            </div>
+          </div>
+
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Users Leaderboard</h2>
+          <UsersStats usersStats={usersStats ?? []} />
+        </>
+      )}
     </div>
-
-  </div>
-
-<div className="container mx-auto">
-            
-{loading && (
-    <div className="flex justify-center">
-        <Spinner />
-    </div>
-)}
-
-{error && 
-    <div className="flex justify-center">
-        <div className="text-red-500 mt-2">{error}</div>
-    </div>
-}
-
-{!loading && !error && (
-    <>
-        <UsersStats usersStats={usersStats} />
-    </>
-)}
-</div>
-</>
   );
 }
 

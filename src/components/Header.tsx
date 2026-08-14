@@ -2,43 +2,54 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+
+const NAV_LINKS = [
+    { href: '/users', label: 'Users', icon: '/img/driver.png' },
+    { href: '/trips', label: 'Trips', icon: '/img/road.png' },
+    { href: '/about', label: 'About', icon: '/img/about.png' },
+];
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const pathname = usePathname();
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
+    const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
+
     return (
-        <header className="mb-10">
-            <nav className="flex justify-between items-center py-2 px-6 bg-white text-gray-800 shadow-md">
-                <Link href="/" className="flex items-center space-x-3">
-                    <Image src="/img/electric-car.png" width={500} height={500} alt="logo" className="h-8 w-auto" />
-                    <span className="text-lg font-semibold">Carpool</span>
+        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+            <nav className="page-container flex items-center justify-between h-16">
+                <Link href="/" className="flex items-center gap-2.5 shrink-0">
+                    <Image src="/img/electric-car.png" width={32} height={32} alt="" className="h-8 w-8" />
+                    <span className="text-lg font-bold text-slate-900">Carpool</span>
                 </Link>
 
-                <div className="hidden lg:flex items-center space-x-6">
-                    <Link href="/users" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
-                        <Image className="h-8 w-auto" src="/img/driver.png" width={500} height={500} alt="" />
-                        Users
-                    </Link>
-                    <Link href="/trips" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
-                        <Image className="h-8 w-auto" src="/img/road.png" width={500} height={500} alt="" />
-                        Trips
-                    </Link>
-                    <Link href="/about" className="py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-200">
-                        <Image className="h-8 w-auto" src="/img/about.png" width={500} height={500} alt="" />
-                        About
-                    </Link>
+                <div className="hidden lg:flex items-center gap-1">
+                    {NAV_LINKS.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${
+                                isActive(link.href)
+                                    ? 'bg-primary-50 text-primary-700'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            }`}
+                        >
+                            <Image className="h-5 w-5" src={link.icon} width={20} height={20} alt="" />
+                            {link.label}
+                        </Link>
+                    ))}
                 </div>
 
                 <button
-                    data-collapse-toggle="mobile-menu-2"
                     type="button"
-                    className="inline-flex items-center p-2 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                    aria-controls="mobile-menu-2"
+                    className="inline-flex items-center p-2 text-slate-500 rounded-lg lg:hidden hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                    aria-controls="mobile-menu"
                     aria-expanded={isMenuOpen}
                     onClick={toggleMenu}
                 >
@@ -58,14 +69,16 @@ export function Header() {
                 </button>
             </nav>
 
-            <div className={`${isMenuOpen ? '' : 'hidden'} lg:hidden`} role="dialog" aria-modal="true">
-                <div className="fixed inset-0 z-10 bg-black bg-opacity-50" onClick={toggleMenu}></div>
-                <div className="fixed inset-y-0 right-0 z-20 w-full max-w-xs overflow-y-auto bg-white shadow-lg px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
+            <div id="mobile-menu" className={`${isMenuOpen ? '' : 'hidden'} lg:hidden`} role="dialog" aria-modal="true">
+                <div className="fixed inset-0 z-10 bg-slate-900/40" onClick={toggleMenu}></div>
+                <div className="fixed inset-y-0 right-0 z-20 w-full max-w-xs overflow-y-auto bg-white shadow-xl px-6 py-6">
                     <div className="flex items-center justify-between">
-                        <Link href="/" className="-m-1.5 p-1.5">
-                            <Image className="h-8 w-auto" src="/img/electric-car.png" width={500} height={500} alt="" />
+                        <Link href="/" className="flex items-center gap-2.5" onClick={toggleMenu}>
+                            <Image src="/img/electric-car.png" width={28} height={28} alt="" className="h-7 w-7" />
+                            <span className="text-base font-bold text-slate-900">Carpool</span>
                         </Link>
-                        <button type="button" className="-m-2.5 rounded-md p-2.5 text-gray-700" onClick={toggleMenu}>
+                        <button type="button" className="rounded-md p-2 text-slate-500 hover:bg-slate-100" onClick={toggleMenu}>
+                            <span className="sr-only">Close menu</span>
                             <svg
                                 className="w-6 h-6"
                                 fill="currentColor"
@@ -80,12 +93,22 @@ export function Header() {
                             </svg>
                         </button>
                     </div>
-                    <div className="mt-6">
-                        <div className="space-y-4">
-                            <Link href="/users" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Users</Link>
-                            <Link href="/trips" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">Trips</Link>
-                            <Link href="/about" onClick={toggleMenu} className="block py-2 px-4 text-center text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition duration-200">About</Link>
-                        </div>
+                    <div className="mt-6 space-y-1.5">
+                        {NAV_LINKS.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={toggleMenu}
+                                className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${
+                                    isActive(link.href)
+                                        ? 'bg-primary-50 text-primary-700'
+                                        : 'text-slate-600 hover:bg-slate-100'
+                                }`}
+                            >
+                                <Image className="h-5 w-5" src={link.icon} width={20} height={20} alt="" />
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

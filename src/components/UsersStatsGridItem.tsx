@@ -10,30 +10,26 @@ interface ProductProps {
 
 const Product: React.FC<ProductProps> = ({ userId, userName, totalTrips, totalDistance, totalTime }) => {
     return (
-        <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-lg hover:shadow-2xl hover:cursor-pointer transition-shadow duration-300 ease-in-out">
-            
-            <Link href={`/users/${userId}`}>
-                <div className="mt-4">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        {userName}
-                    </h2>
+        <Link href={`/users/${userId}`} className="card card-hover block p-5">
+            <h3 className="text-base font-semibold text-slate-900 mb-4 truncate">
+                {userName}
+            </h3>
 
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900 fon">Total Trips</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalTrips}</label>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Distance km</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalDistance}</label>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm font-bold text-gray-900">Total Time</label>
-                        <label className="block mb-2 text-sm font-medium text-gray-900">{totalTime}</label>
-                    </div>
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="stat-label">Trips</span>
+                    <span className="text-sm font-semibold text-slate-900">{totalTrips}</span>
                 </div>
-            </Link>
-
-        </div>
+                <div className="flex items-center justify-between">
+                    <span className="stat-label">Distance</span>
+                    <span className="text-sm font-semibold text-slate-900">{totalDistance} km</span>
+                </div>
+                <div className="flex items-center justify-between">
+                    <span className="stat-label">Time</span>
+                    <span className="text-sm font-semibold text-slate-900">{totalTime}</span>
+                </div>
+            </div>
+        </Link>
     );
 };
 

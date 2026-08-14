@@ -1,76 +1,36 @@
 'use server'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch } from "@/lib/api";
+import type { Trip } from "@/types";
 
-export async function getTrips() {
-    const res = await fetch(`${apiUrl}/Trips`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getTrips(): Promise<Trip[]> {
+    return apiFetch<Trip[]>("/Trips");
 }
 
-export async function getTrip(id: string) {
-    const res = await fetch(`${apiUrl}/Trips/${id}`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getTrip(id: string): Promise<Trip> {
+    return apiFetch<Trip>(`/Trips/${id}`);
 }
 
-export async function getUserTrips(userId: string) {
-    const res = await fetch(`${apiUrl}/Trips/User/${userId}`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getUserTrips(userId: string): Promise<Trip[]> {
+    return apiFetch<Trip[]>(`/Trips/User/${userId}`);
 }
 
-export async function postTrip(userId: string, distance: string, isCarpool: boolean, startDate: string, stopDate: string) {
-    const res = await fetch(`${apiUrl}/Trips`, {
+export async function postTrip(userId: string, distance: number, isCarpool: boolean, startDate: string, stopDate: string): Promise<void> {
+    await apiFetch<void>("/Trips", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            userId,
-            distance,
-            isCarpool,
-            startDate,
-            stopDate
-        }),
+        body: JSON.stringify({ userId, distance, isCarpool, startDate, stopDate }),
     });
-
-    if (!res.ok) {
-        throw new Error("Failed to add trip");
-    }
 }
 
-export async function putTrip(tripId: string, userId: string, distance: string, isCarpool: boolean, startDate: string, stopDate: string) {
-    const res = await fetch(`${apiUrl}/Trips/${tripId}`, {
+export async function putTrip(tripId: string, userId: string, distance: number, isCarpool: boolean, startDate: string, stopDate: string): Promise<void> {
+    await apiFetch<void>(`/Trips/${tripId}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            userId,
-            distance,
-            isCarpool,
-            startDate,
-            stopDate
-        }),
+        body: JSON.stringify({ userId, distance, isCarpool, startDate, stopDate }),
     });
-
-    if (!res.ok) {
-        throw new Error("Failed to edit trip");
-    }
 }
 
-export async function deleteTrip(id: string) {
-    await fetch(`${apiUrl}/Trips/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+export async function deleteTrip(id: string): Promise<void> {
+    await apiFetch<void>(`/Trips/${id}`, {
+        method: "DELETE",
     });
 }

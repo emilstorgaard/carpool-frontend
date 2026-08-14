@@ -1,44 +1,17 @@
 "use client"
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { getTrip } from "@/lib/trips";
+import { getTrip, deleteTrip } from "@/lib/trips";
 import { Spinner } from "@/components/Spinner";
 import { getDateTime } from "@/lib/dateTime";
-import { deleteTrip } from "@/lib/trips";
 import { useRouter } from 'next/navigation'
-
-type Trip = {
-    id: string;
-    userId: string;
-    distance: number;
-    isCarpool: boolean;
-    startDate: string;
-    stopDate: string;
-    createdAt: string;
-    updatedAt: string;
-};
+import { useAsyncData } from "@/hooks/useAsyncData";
 
 export default function Trip({ params }: { params: { id: string } }) {
-    const [trip, setTrip] = useState<Trip>();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: trip, loading, error } = useAsyncData(() => getTrip(params.id), [params.id], "Failed to fetch trip");
     const router = useRouter()
-
-    useEffect(() => {
-        async function fetchTrip() {
-            try {
-                const initialTrip = await getTrip(params.id);
-                setTrip(initialTrip);
-            } catch (err) {
-                setError("Failed to fetch trip");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchTrip();
-    }, [params.id]);
 
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -61,84 +34,86 @@ export default function Trip({ params }: { params: { id: string } }) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-            <div className="w-full bg-white border border-gray-200 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 mb-4">
-                <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div className="page-container-narrow py-8">
+            <div className="panel mb-6">
 
-                    {loading && (
-                        <div className="flex justify-center">
-                            <Spinner />
-                        </div>
-                    )}
+                    {loading && <Spinner label="Loading trip..." />}
 
-                    {error && <div className="text-red-500 mt-2">{error}</div>}
+                    {error && <div className="alert-error">{error}</div>}
 
                     {!loading && !error && (
                         <>
-                            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                                Trip
-                            </h1>
-
-                            <label>{trip?.id}</label>
-                            
-                            <div className='flex justify-center items-center'>
-                                <div className="relative w-48 h-48">
-                                    <Image
-                                        className="object-cover rounded-t-lg"
-                                        src="/img/road.png"
-                                        layout="fill"
-                                        alt={trip?.id || "trip"}
-                                    />
+                            <div className="flex items-center gap-4 mb-6">
+                                <Image
+                                    className="rounded-full object-cover bg-slate-100"
+                                    src="/img/road.png"
+                                    width={64}
+                                    height={64}
+                                    alt="trip"
+                                />
+                                <div>
+                                    <h1 className="text-xl font-bold text-slate-900">
+                                        {getDateTime(trip?.startDate)}
+                                    </h1>
+                                    <p className="text-sm text-slate-500">{trip?.id}</p>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">User</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.userId}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Distance</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.distance} km</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Carpool</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{trip?.isCarpool ? 'Yes' : 'No'}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Start</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.startDate)}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900 fon">Stop</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.stopDate)}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Created At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.createdAt)}</label>
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-bold text-gray-900">Updated At</label>
-                                <label className="block mb-2 text-sm font-medium text-gray-900">{getDateTime(trip?.updatedAt)}</label>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <Link href={`/trips/${params.id}/edit`} className="text-blue-500 hover:text-blue-700 font-bold rounded-md transition duration-300 ease-in-out">
+
+                            <dl className="space-y-3 mb-6">
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">User</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{trip?.userId}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Distance</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{trip?.distance} km</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Carpool</dt>
+                                    <dd>
+                                        <span className={trip?.isCarpool ? 'badge-success' : 'badge-neutral'}>
+                                            {trip?.isCarpool ? 'Yes' : 'No'}
+                                        </span>
+                                    </dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Start</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(trip?.startDate)}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Stop</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(trip?.stopDate)}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Created At</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(trip?.createdAt)}</dd>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <dt className="stat-label">Updated At</dt>
+                                    <dd className="text-sm font-medium text-slate-900">{getDateTime(trip?.updatedAt)}</dd>
+                                </div>
+                            </dl>
+
+                            <div className="flex justify-between items-center border-t border-slate-100 pt-4">
+                                <Link href={`/trips/${params.id}/edit`} className="link-action">
                                     Edit
                                 </Link>
                                 {isDeleting ? (
-                                    <p className="text-red-500 font-bold">Deleting...</p>
+                                    <span className="text-sm font-semibold text-red-400">Deleting...</span>
                                 ) : (
-                                    <button onClick={confirmDelete} className="text-red-500 hover:text-red-700 font-bold rounded-md transition duration-300 ease-in-out">
+                                    <button onClick={confirmDelete} className="link-danger">
                                         Delete
                                     </button>
                                 )}
                             </div>
                         </>
                     )}
-
-                </div>
             </div>
 
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Passengers</h5>
-
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Passengers</h2>
+            <div className="empty-state">
+                <p className="text-sm">No passengers to show yet.</p>
+            </div>
         </div>
     )
 }

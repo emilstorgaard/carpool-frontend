@@ -1,27 +1,16 @@
 'use server'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch } from "@/lib/api";
+import type { TotalStats, UserStats, UserTripStats } from "@/types";
 
-export async function getUserStats(id: string) {
-    const res = await fetch(`${apiUrl}/Stats/User/${id}`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getUserStats(id: string): Promise<UserStats> {
+    return apiFetch<UserStats>(`/Stats/User/${id}`);
 }
 
-export async function getTotalStats() {
-    const res = await fetch(`${apiUrl}/Stats/Total`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getTotalStats(): Promise<TotalStats> {
+    return apiFetch<TotalStats>("/Stats/Total");
 }
 
-export async function getUsersStats() {
-    const res = await fetch(`${apiUrl}/Stats/Users`, {
-        cache: "no-store",
-    });
-    const data = await res.json();
-    return data;
+export async function getUsersStats(): Promise<UserTripStats[]> {
+    return apiFetch<UserTripStats[]>("/Stats/Users");
 }

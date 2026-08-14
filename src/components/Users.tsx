@@ -1,13 +1,7 @@
 "use client"
 
 import UserListItem from "@/components/UserListItem";
-
-type User = {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-};
+import type { User } from "@/types";
 
 interface PageProps {
     users: User[];
@@ -15,21 +9,26 @@ interface PageProps {
 }
 
 const Users: React.FC<PageProps> = ({ users, onDelete }) => {
+    if (users.length === 0) {
+        return (
+            <div className="empty-state">
+                <p className="font-medium text-slate-700">No users yet</p>
+                <p className="text-sm">Add your first user to get started.</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="container mx-auto px-4 pb-8">
-
-            <ul className="mx-auto divide-y divide-gray-200">
-                {users.map((user: User) => (
-                    <UserListItem
-                        key={user.id}
-                        id={user.id}
-                        name={user.name}
-                        onDelete={onDelete}
-                    />
-                ))}
-            </ul>
-
-        </div>
+        <ul className="space-y-3">
+            {users.map((user: User) => (
+                <UserListItem
+                    key={user.id}
+                    id={user.id}
+                    name={user.name}
+                    onDelete={onDelete}
+                />
+            ))}
+        </ul>
     );
 }
 
